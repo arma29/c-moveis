@@ -74,10 +74,17 @@ def points(i_index,j_index,k_index, p_index):
 	array_aux = np.array([0,0])
 	temp1 = pow(np.linalg.norm(BST_mtz[j_index]),2)
 	temp2 = pow(np.linalg.norm(BST_mtz[i_index]),2)
-	temp3 = (dist_mtz[p_index][j_index] - dist_mtz[p_index][i_index])
-
+	temp3 = pow(dist_mtz[p_index][j_index],2) - pow(dist_mtz[p_index][i_index],2)
 
 	array_aux[0] = temp1 - temp2 - temp3
+	
+	temp1 = pow(np.linalg.norm(BST_mtz[k_index]),2)
+	temp3 = pow(dist_mtz[p_index][k_index],2) - pow(dist_mtz[p_index][i_index],2)
+
+	
+	array_aux[1] = temp1 - temp2 - temp3
+	
+	
  	#array_aux[1] = 
 	print array_aux
 	
