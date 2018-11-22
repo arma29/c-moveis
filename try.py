@@ -18,6 +18,7 @@ d0 = 1	#must be greater than 0, ideal 1, distance target-target
 B = 6 #number of BSTs
 L = 2 #Dimension 2D
 
+#TODO: Decisions and completness test
 def read_csv():
 	#nem precisa dos arrays, da pra ir direto no BST
 	for row in data_BST:
@@ -57,10 +58,11 @@ def estimate_dst():
 	
 	print LOC_mtz[0]
 	print dist_mtz[0]
+	return dist_mtz
 	
 def points(i_index,j_index,k_index, p_index):
 	BST_mtz = convert_np()
-	print BST_mtz
+	#print BST_mtz
 	mtz_aux = np.zeros([L,L])
 
 	mtz_aux[0][0] = BST_mtz[j_index][0] - BST_mtz[i_index][0]
@@ -68,11 +70,21 @@ def points(i_index,j_index,k_index, p_index):
 	mtz_aux[1][0] = BST_mtz[k_index][0] - BST_mtz[i_index][0]
 	mtz_aux[1][1] = BST_mtz[k_index][1] - BST_mtz[i_index][1]
 	
-	print mtz_aux
+	dist_mtz = estimate_dst()
+	array_aux = np.array([0,0])
+	temp1 = pow(np.linalg.norm(BST_mtz[j_index]),2)
+	temp2 = pow(np.linalg.norm(BST_mtz[i_index]),2)
+	temp3 = (dist_mtz[p_index][j_index] - dist_mtz[p_index][i_index])
+
+
+	array_aux[0] = temp1 - temp2 - temp3
+ 	#array_aux[1] = 
+	print array_aux
+	
+	#print mtz_aux
 
 
 						
 if __name__ == "__main__":
 	read_csv()
-	estimate_dst()
 	points(0,1,2,1)	
