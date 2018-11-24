@@ -1,5 +1,16 @@
 import math
 import numpy
+#Robson Library
+from PyRadioLoc.Pathloss.Models import FreeSpaceModel
+from PyRadioLoc.Pathloss.Models import FlatEarthModel
+from PyRadioLoc.Pathloss.Models import LeeModel
+from PyRadioLoc.Pathloss.Models import EricssonModel
+from PyRadioLoc.Pathloss.Models import Cost231Model
+from PyRadioLoc.Pathloss.Models import Cost231HataModel
+from PyRadioLoc.Pathloss.Models import OkumuraHataModel
+from PyRadioLoc.Pathloss.Models import Ecc33Model
+from PyRadioLoc.Pathloss.Models import SuiModel
+
 #https://gis.stackexchange.com/questions/66/trilateration-using-3-latitude-longitude-points-and-3-distances/415#415
 #https://en.wikipedia.org/wiki/Trilateration
 #http://obeattie.github.io/gmaps-radius/?lat=51.500358&lng=-0.125506&z=10&u=mi&r=5
@@ -21,24 +32,32 @@ earthR = 6371
 #Com esses raios absurdos, n ha intersec
 #Os circulos tem que overlapear
 
-LatA = -8.068361111 #BTS1 -8.068361111,-34.892722222 112.99db
-LonA = -34.892722222
-# DistA = 5.91190 #real eh 0.88km
-DistA = 0.6
+# LatA = -8.068361111 #BTS1 -8.068361111,-34.892722222 112.99db
+# LonA = -34.892722222
+# DistA = 0.72 #real eh 0.88km
+# DistA = 0.5
 #
-LatB = -8.075916667 #BTS2 -8.075916667,-34.894611111 114.39db
-LonB = -34.894611111
-# DistB = 6.94588 #real eh 0.19km
-DistB = 0.7
-#
-LatC = -8.076361111 #BTS3 -8.076361111,-34.908 128.64db
-LonC = -34.908
-# DistC = 35.82840 #real eh 1.29km
-DistC = 3.5
+LatA = -8.075916667 #BTS2 -8.075916667,-34.894611111 114.39db
+LonA = -34.894611111
+DistA = 1.07 #real eh 0.19km
+# DistB = 0.75
 
-# LatC = -8.075916667 #BTS4
+# LatB = -8.076361111 #BTS3 -8.076361111,-34.908 128.64db GOOD
+# LonB = -34.908
+# DistB = 1.72 #real eh 1.29km
+# DistC = 1.5
+
+# LatC = -8.075916667 #BTS4 -8.075916667,-34.8946111116 114..64db BTS4 nor BTS1
 # LonC = -34.8946111116
-# DistC = 7.06687
+# DistC = 0.52086778
+
+LatB = -8.066 # BTS5 -8.066, -34.8894444444444 128.09db 
+LonB = -34.8894444444444
+DistB = 2
+
+LatC = -8.06458333333333 #BTS6 -8.06458333333333,-34.8945833333333 133.74db GOOD
+LonC = -34.8945833333333
+DistC = 1.78                                                                         
 
 #using authalic sphere
 #if using an ellipsoid this step is slightly different
@@ -91,7 +110,10 @@ def lateration(P1,P2,P3):
     print pow(y,2)
 
     #nao pode dar uma raiz negativa
-    z = numpy.sqrt((pow(DistA,2) - pow(x,2) - pow(y,2)))
+    try:
+        z = numpy.sqrt((pow(DistA,2) - pow(x,2) - pow(y,2)))
+    except:
+        z = float('nan')
 
     #triPt is an array with ECEF x,y,z of trilateration point
     triPt = P1 + x*ex + y*ey + z*ez
@@ -104,12 +126,12 @@ def lateration(P1,P2,P3):
     print lat, lon
 
 def condition(P1,P2,DistA,DistB):
-    print (numpy.linalg.norm(P2-P1)- DistA)
-    print " < "
-    print DistB
-    print " < "
-    print (numpy.linalg.norm(P2-P1) + DistA)
-    print "////////////"
+    # print (numpy.linalg.norm(P2-P1)- DistA)
+    # print " < "
+    # print DistB
+    # print " < "
+    # print (numpy.linalg.norm(P2-P1) + DistA)
+    # print "////////////"
     if( ((numpy.linalg.norm(P2-P1)- DistA) < DistB)
         and (DistB < (numpy.linalg.norm(P2-P1) + DistA))):
         print "OK"
@@ -118,7 +140,12 @@ def condition(P1,P2,DistA,DistB):
 
 if __name__ == '__main__':
     condition(P1,P2,DistA,DistB)
+    condition(P1,P3,DistA,DistC)
+    condition(P2,P3,DistB,DistC)
     lateration(P1,P2,P3)
+    print
+    m1 = FreeSpaceModel(1800) #Frequency
+    print("FreeSapce:{}".format(m1.pathloss(5.9))) #km
 #
 # condition(P1,P2,DistA,DistB)
 # condition(P1,P3,DistA,DistC)
