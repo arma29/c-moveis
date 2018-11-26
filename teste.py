@@ -1,15 +1,17 @@
 import math
 import numpy
+import mpu
+
 #Robson Library
-from PyRadioLoc.Pathloss.Models import FreeSpaceModel
-from PyRadioLoc.Pathloss.Models import FlatEarthModel
-from PyRadioLoc.Pathloss.Models import LeeModel
-from PyRadioLoc.Pathloss.Models import EricssonModel
-from PyRadioLoc.Pathloss.Models import Cost231Model
-from PyRadioLoc.Pathloss.Models import Cost231HataModel
-from PyRadioLoc.Pathloss.Models import OkumuraHataModel
-from PyRadioLoc.Pathloss.Models import Ecc33Model
-from PyRadioLoc.Pathloss.Models import SuiModel
+# from PyRadioLoc.Pathloss.Models import FreeSpaceModel
+# from PyRadioLoc.Pathloss.Models import FlatEarthModel
+# from PyRadioLoc.Pathloss.Models import LeeModel
+# from PyRadioLoc.Pathloss.Models import EricssonModel
+# from PyRadioLoc.Pathloss.Models import Cost231Model
+# from PyRadioLoc.Pathloss.Models import Cost231HataModel
+# from PyRadioLoc.Pathloss.Models import OkumuraHataModel
+# from PyRadioLoc.Pathloss.Models import Ecc33Model
+# from PyRadioLoc.Pathloss.Models import SuiModel
 
 #https://gis.stackexchange.com/questions/66/trilateration-using-3-latitude-longitude-points-and-3-distances/415#415
 #https://en.wikipedia.org/wiki/Trilateration
@@ -37,9 +39,9 @@ earthR = 6371
 # DistA = 0.72 #real eh 0.88km
 # DistA = 0.5
 #
-LatA = -8.075916667 #BTS2 -8.075916667,-34.894611111 114.39db
-LonA = -34.894611111
-DistA = 1.07 #real eh 0.19km
+# LatA = -8.075916667 #BTS2 -8.075916667,-34.894611111 114.39db
+# LonA = -34.894611111
+# DistA = 1.07 #real eh 0.19km
 # DistB = 0.75
 
 # LatB = -8.076361111 #BTS3 -8.076361111,-34.908 128.64db GOOD
@@ -51,13 +53,13 @@ DistA = 1.07 #real eh 0.19km
 # LonC = -34.8946111116
 # DistC = 0.52086778
 
-LatB = -8.066 # BTS5 -8.066, -34.8894444444444 128.09db 
-LonB = -34.8894444444444
-DistB = 2
+# LatB = -8.066 # BTS5 -8.066, -34.8894444444444 128.09db
+# LonB = -34.8894444444444
+# DistB = 2
 
-LatC = -8.06458333333333 #BTS6 -8.06458333333333,-34.8945833333333 133.74db GOOD
-LonC = -34.8945833333333
-DistC = 1.78                                                                         
+# LatC = -8.06458333333333 #BTS6 -8.06458333333333,-34.8945833333333 133.74db GOOD
+# LonC = -34.8945833333333
+# DistC = 1.78
 
 #using authalic sphere
 #if using an ellipsoid this step is slightly different
@@ -139,13 +141,29 @@ def condition(P1,P2,DistA,DistB):
         print "NOT OK"
 
 if __name__ == '__main__':
-    condition(P1,P2,DistA,DistB)
-    condition(P1,P3,DistA,DistC)
-    condition(P2,P3,DistB,DistC)
-    lateration(P1,P2,P3)
-    print
-    m1 = FreeSpaceModel(1800) #Frequency
-    print("FreeSapce:{}".format(m1.pathloss(5.9))) #km
+    # condition(P1,P2,DistA,DistB)
+    # condition(P1,P3,DistA,DistC)
+    # condition(P2,P3,DistB,DistC)
+    # lateration(P1,P2,P3)
+    # print
+    m1 = FreeSpaceModel(1800)
+    m2 = FlatEarthModel(1800)
+    m3 = LeeModel(1800)
+    m4 = EricssonModel(1800)
+    m5 =  Cost231Model(1800)
+    m6 = Cost231HataModel(1800)
+    m7 = OkumuraHataModel(1800)
+    m8 = Ecc33Model(1800)
+    m9 = SuiModel(2100)
+    print("FreeSapce:{}".format(m1.pathloss(0.8)))
+    print("FlatEarthModel:{}".format(m2.pathloss([0.8,0.5])))
+    print("LeeModel:{}".format(m3.pathloss([0.8,0.5])))
+    print("EricssonModel:{}".format(m4.pathloss([0.8,0.5])))
+    print("Cost231Model:{}".format(m5.pathloss([0.8,0.5])))
+    print("Cost231HataModel:{}".format(m6.pathloss([0.8,0.5])))
+    print("OkumuraHataModel:{}".format(m7.pathloss([0.8,0.5])))
+    print("Ecc33Model:{}".format(m8.pathloss([0.8,0.5])))
+    print("SuiModel:{}".format(m9.pathloss([0.8,0.5])))
 #
 # condition(P1,P2,DistA,DistB)
 # condition(P1,P3,DistA,DistC)

@@ -1,0 +1,8 @@
+Resultados_1.csv -> Distância estimada baseada no modelo C232Hata
+Average error -  709.314639137 m with: 585  points
+
+Resultados_2.csv -> Distância estimada baseada no modelo SUI (Frequencia 1901 MHZ)
+Average error -  508.370337086 m with: 1199  points
+
+Resultados_3.csv -> Distância estimada baseada no modelo FPSL (com aproximações)
+Average error -  173.419820172 m with: 1500  points
