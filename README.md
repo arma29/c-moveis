@@ -1,15 +1,25 @@
-# Position Location 
+# Trilateration
+___
 
-Part 3 - RSSI
-Chapter 11 - FUNDAMENTALS OF RECEIVED SIGNAL STRENGTH-BASED
-POSITION LOCATION
+This a Python implementation for [Trilateration](https://en.wikipedia.org/wiki/Trilateration), based on [this approach](https://gis.stackexchange.com/questions/66/trilateration-using-3-latitude-longitude-points-and-3-distances/415#415). For estimate the distances, this [library](https://github.com/timotrob/pyRadioLoc) was used. Since the the only knowns points are the BST (Anchor), we need to find the distances between the target and the nodes to execute the above method. Handbook of Position Location(Reza Zekavat , R. Michael Buehrer) was used as a masterful guide for this work.
 
-Chapter 12 - ON THE PERFORMANCE OF WIRELESS INDOOR
-LOCALIZATION USING RECEIVED SIGNAL STRENGTH
+BST Infos:
+- Frequency: GSM1800
+- EIRP: 55.59
 
-CHAPTER 13 IMPACT OF ANCHOR PLACEMENT AND ANCHOR SELECTION
-ON LOCALIZATION ACCURACY 
+Distance Estimate:
+- Cost232Hata Model
+- SUI Model (1901 MHZ)
+- FSPL Model with variations
+- Data training 
 
-CHAPTER 14 KERNEL METHODS FOR RSS-BASED INDOOR LOCALIZATION 457
+The Scenario:
+- Area Kind: Urban
+- City Kind: Large
+- Terrain Kind: C  *mostly flat terrain with light tree densities*
 
-CHAPTER 15 RF FINGERPRINTING LOCATION TECHNIQUES 
+
+In all cases the Pathloss(dB) was used as parameter to return the distance.
+
+# Results:
+TODO: Show the plots and trilateration example. NLS method?
