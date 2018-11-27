@@ -433,7 +433,7 @@ if __name__ == "__main__":
 	print "P-",dist_mtz[0]
 	print "Real: ", LOC_mtz[0][0],",",LOC_mtz[0][1]
 
-	all_points(dist_mtz)
+	# all_points(dist_mtz)
 	#print RES_list
 
 	# with open("Dados/Resultados_3.csv", "wb") as f:
