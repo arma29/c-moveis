@@ -29,7 +29,8 @@ from PyRadioLoc.Pathloss.Models import SuiModel
 
 #Data
 data_BTS = csv.reader(open('Dados/dados_BTSs.csv', 'rb'))
-data_LOC = csv.reader(open('Dados/LocTreino_Equipe_4.csv', 'rb'))
+# data_LOC = csv.reader(open('Dados/LocTreino_Equipe_4.csv', 'rb'))
+data_LOC = csv.reader(open('Dados/LocTest.csv', 'rb'))
 
 #Constants
 lat_index = 1
@@ -40,10 +41,11 @@ factor = 8 #For FPSL aproximate
 B = 6 #number of BTSs
 L = 3 #Dimension 2D
 P = 1500 #number of points
+TestP = 200 #points for test
 GSM = 1800 #frequency for FPSL MHZ and meters (-27.55)https://en.wikipedia.org/wiki/Free-space_path_loss
 
 # LOC_mtz = np.zeros([P,L]) #Real points
-LOC_mtz = np.array([[1.]*L]*P)
+LOC_mtz = np.array([[1.]*L]*TestP)
 # BTS_mtz = np.zeros([B,L]) #Bts Points
 BTS_mtz = np.array([[1.]*L]*B)
 
@@ -56,13 +58,6 @@ list_bts = list(data_BTS)
 list_bts.pop(0)
 
 #TODO: Decisions and completness test
-# def gps_ecef(lat, lon, alt):
-# 	ecef = pj.Proj(proj='geocent', ellps='WGS84', datum='WGS84')
-# 	lla = pj.Proj(proj='latlong', ellps='WGS84', datum='WGS84')
-# 	x, y, z = pj.transform(lla, ecef, lon, lat, alt, radians=False)
-
-# 	return np.array([x,y,z])
-
 def coord_conv(lat,lon,alt):
 	lat = float(lat)
 	lon = float(lon)
@@ -112,35 +107,31 @@ def Cost231Hata_estimate(vi):
 	return m1.dist_path(float(vi))
 
 #return distance to target array and modify the real points
-diff = np.array([[1.]*B]*P)
+diff = np.array([[1.]*B]*TestP)
 def dist_array():
 
 	#Read .csv file with 1500 points
 	loc_list = list(data_LOC)
 	loc_list.pop(0)
+	print loc_list[0]
 
-	dist_mtz = np.array([[1.]*B]*P)
+	dist_mtz = np.array([[1.]*B]*TestP)
 
 	#Each point will a array of 6 distance (anchor - target)
-	for i in range(0,P):
+	for i in range(0,TestP):
 		# LOC_mtz[i] = gps_ecef(loc_list[i][1], loc_list[i][2],0) #lat, lon ,hei
 		RES_list.append([(loc_list[i][0])])
 		#LOC_mtz[i] = coord_conv(loc_list[i][1], loc_list[i][2],0)
-		for j in range (0,L):
-			LOC_mtz[i][j] = loc_list[i][j+1]
+		for j in range (0,2):
+			LOC_mtz[i][j] = float(loc_list[i][j+1])
 		for j in range (0,B):
-			# print loc_list[i][j+3]
-			#dist_mtz[i][j]  = ML_estimate((loc_list[i][j+3]))
-			#dist_mtz[i][j] = ML_estimate(loc_list[i][j+3])
-			#pathBTS1 to pathBTS6
-
-			# dist_mtz[i][j] = km_dist(i, float(list_bts[j][1]), float(list_bts[j][2]))
 			diff[i][j] = km_dist(i, float(list_bts[j][1]), float(list_bts[j][2]))
 			# print loc_list[i][j+3]
-			#dist_mtz[i][j] = Cost231Hata_estimate(loc_list[i][j+3])
-			#dist_mtz[i][j] = SUI_estimate(loc_list[i][j+3])
-			dist_mtz[i][j] = FPSL_estimate(loc_list[i][j+3])
-			#dist_mtz[i][j] = (Cost231Hata_estimate(loc_list[i][j+3]) + SUI_estimate(loc_list[i][j+3]))/2
+			if(loc_list[i][j+3] != 'NA'):
+				#dist_mtz[i][j] = Cost231Hata_estimate(loc_list[i][j+3])
+				#dist_mtz[i][j] = SUI_estimate(loc_list[i][j+3])
+				dist_mtz[i][j] = FPSL_estimate(loc_list[i][j+3])
+				#dist_mtz[i][j] = (Cost231Hata_estimate(loc_list[i][j+3]) + SUI_estimate(loc_list[i][j+3]))/2
 
 	#print "Dist ponto 1 -",  dist_mtz[0]
 	# print "Real ponto 1 -", LOC_mtz[0]
@@ -256,64 +247,6 @@ def tri_lat(p_index,i_index,j_index,k_index, dist_mtz):
 	Dist2 = np.copy(dist_mtz[p_index][j_index])
 	Dist3 = np.copy(dist_mtz[p_index][k_index])
 
-	# if(full_condition(P1,P2,P3,Dist1,Dist2,Dist3)):
-	#
-	# 	#Translade circles references (BTS)
-	# 	ex = (P2 - P1)/(np.linalg.norm(P2 - P1))
-	# 	i = np.dot(ex,P3 - P1)
-	# 	ey = (P3 - P1 - i*ex)/(np.linalg.norm(P3 - P1 - i*ex))
-	# 	ez = np.cross(ex,ey)
-	# 	d = np.linalg.norm(P2 - P1)
-	# 	j = np.dot(ey,P3 - P1)
-	#
-	#
-	#
-	# 	# print dist_mtz[p_index]
-	# 	# print "Choosen Dist - ",np.array([Dist1,Dist2,Dist3]), "\n"
-	#
-	# 	# print full_condition(P1,P2,P3,Dist1,Dist2,Dist3)
-	#
-	# 	#plug and chug
-	# 	x = (pow(Dist1,2) - pow(Dist2,2) + pow(d,2))/(2*d)
-	# 	y = (( pow(Dist1,2) - pow(Dist3,2) + pow(i,2) + pow(j,2))/(2*j))
-	# 	- ((i/j) *x)
-	#
-	# 	#Why y got so penalized i,j,k
-	#
-	# 	#only contendoa
-	# 	test = (pow(Dist1,2) - pow(x,2) - pow(y,2))
-	# 	if(test < 0):
-	# 		z = min(x,y)
-	# 		#z = 1
-	# 		# print "Forced Z"
-	# 		# return float("inf")
-	# 		return (float("inf"),0,0)
-	# 	else:
-	# 		z = np.sqrt(test)
-	#
-	# 	# print "Cartesian Pred - ", np.array([x,y,z]), "\n"
-	# 	#triPT dist_array
-	# 	triPt = P1 + x*ex + y*ey + z*ez
-	#
-	# 	#Back
-	# 	earthR = 6371
-	# 	if(triPt[2]/earthR < -1 or triPt[2]/earthR > 1):
-	# 		# print "Forced again"
-	# 		# return float("inf")
-	# 		return (float("inf"),0,0)
-	# 	lat = math.degrees(math.asin(triPt[2] / earthR))
-	# 	lon = math.degrees(math.atan2(triPt[1],triPt[0]))
-	#
-	# 	# print "REal - ",LOC_mtz[p_index][0], LOC_mtz[p_index][1]
-	# 	# print "Pred - ",lat, lon
-	#
-	# 	dist = km_dist(p_index,lat,lon)
-	# 	# print "Erro -", dist*1000, "m"
-	# 	return (dist,lat,lon)
-	#
-	# else:
-	# 	return (float("inf"),0,0)
-
 	#Translade circles references (BTS)
 	ex = (P2 - P1)/(np.linalg.norm(P2 - P1))
 	i = np.dot(ex,P3 - P1)
@@ -322,12 +255,6 @@ def tri_lat(p_index,i_index,j_index,k_index, dist_mtz):
 	d = np.linalg.norm(P2 - P1)
 	j = np.dot(ey,P3 - P1)
 
-
-
-	# print dist_mtz[p_index]
-	# print "Choosen Dist - ",np.array([Dist1,Dist2,Dist3]), "\n"
-
-	# print full_condition(P1,P2,P3,Dist1,Dist2,Dist3)
 
 	#plug and chug
 	x = (pow(Dist1,2) - pow(Dist2,2) + pow(d,2))/(2*d)
@@ -389,10 +316,10 @@ def best_error(p_index,dist_mtz):
 
 	return min(list)
 
-def all_points(dist_mtz):
+def all_points(dist_mtz, points):
 	sum = 0
-	p = 1500
-	for i in range(0,P):
+	p = points
+	for i in range(0,TestP):
 		(err,lat,lon) = best_error(i,dist_mtz)
 		RES_list[i+1].append(LOC_mtz[i][0])
 		RES_list[i+1].append(LOC_mtz[i][1])
@@ -420,20 +347,13 @@ if __name__ == "__main__":
 	convert_np()
 	dist_mtz = dist_array() #m
 
-	#tri_lat(4,1,0,3, dist_mtz) #debugar casos assim
-	#min_error(0,0, dist_mtz)
-	# min_error(4,0, dist_mtz)
-	# min_error(4,2, dist_mtz)
-	# min_error(4,3, dist_mtz)
-	# min_error(4,4, dist_mtz)
-
 	#tri_lat(0,1,2,4, dist_mtz)
 	print best_error(0,dist_mtz)[0]*1000,"m - Min error"
 	print "R-",diff[0]
 	print "P-",dist_mtz[0]
 	print "Real: ", LOC_mtz[0][0],",",LOC_mtz[0][1]
 
-	# all_points(dist_mtz)
+	all_points(dist_mtz,200)
 	#print RES_list
 
 	# with open("Dados/Resultados_3.csv", "wb") as f:
