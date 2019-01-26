@@ -22,8 +22,9 @@ The Scenario:
 In all cases the Pathloss(dB) was used as parameter to return the distance.
 
 # Results:
-Blue Points: Real Targets
-Yellow Points: Predicted Targets
-White Line: Distance between the real and predicted one
+- Blue Points: Real Targets
+- Yellow Points: Predicted Targets
+- White Line: Distance between the real and predicted one
+## Trilateration
 
 ![Best Trilateration](Img/trilatbest.png?raw=True "Trilateration")
